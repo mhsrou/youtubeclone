@@ -8,8 +8,9 @@ $params = array_merge(
 
 return [
     'id' => 'app-frontend',
-    'name'=>'YouTubeClone',
+    'name' => 'YouTubeClone',
     'basePath' => dirname(__DIR__),
+    'defaultRoute' => '/video/index',
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
@@ -43,6 +44,9 @@ return [
             'rules' => [
             ],
         ],
+        'assetManager' => [
+            'appendTimestamp' => true,
+        ]
     ],
     'params' => $params,
 ];
