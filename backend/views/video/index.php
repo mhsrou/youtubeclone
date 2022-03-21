@@ -1,5 +1,6 @@
 <?php
 
+use common\models\Video;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -25,21 +26,28 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'video_id',
-            'title',
-            'description:ntext',
-            'tags',
-            'status',
+            [
+                'attribute' => 'video_id',
+                'content' => function ($model) {
+                    return $this->render('_video_item', ['model' => $model]);
+                }
+            ],
+            [
+                'attribute' => 'status',
+                'content' => function ($model) {
+                    return $model->getStatusLabel()[$model->status];
+                }
+            ],
             //'has_thumbnail',
             //'video_name',
-            //'created_at',
-            //'updated_at',
+            'created_at:datetime',
+            'updated_at:datetime',
             //'created_by',
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, video $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'video_id' => $model->video_id]);
-                 }
+                }
             ],
         ],
     ]); ?>
