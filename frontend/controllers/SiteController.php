@@ -93,7 +93,7 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
         }
-
+        $this->layout = 'blank';
         $model->password = '';
 
         return $this->render('login', [
@@ -159,6 +159,7 @@ class SiteController extends Controller
             return $this->goHome();
         }
 
+        $this->layout = 'blank';
         return $this->render('signup', [
             'model' => $model,
         ]);
