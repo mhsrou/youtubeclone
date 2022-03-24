@@ -5,11 +5,9 @@
 
 $this->beginContent('@frontend/views/layouts/base.php');
 ?>
-
-<main>
-    <div class="m-2">
-        <?= $content ?>
-    </div>
-</main>
-
+    <main>
+        <div class="m-2">
+            <?= $content ?>
+        </div>
+    </main>
 <?php $this->endContent();

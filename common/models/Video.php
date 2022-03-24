@@ -28,6 +28,8 @@ use yii\web\UploadedFile;
  * @property int|null $created_by
  *
  * @property User $createdBy
+ * @property VideoLike[] $likes
+ * @property VideoLike[] $dislikes
  */
 class Video extends \yii\db\ActiveRecord
 {
@@ -117,8 +119,27 @@ class Video extends \yii\db\ActiveRecord
     /**
      * @return ActiveQuery
      */
-    public function getViews(){
-        return $this->hasMany(VideoView::class,['video_id' => 'video_id']);
+    public function getViews()
+    {
+        return $this->hasMany(VideoView::class, ['video_id' => 'video_id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getLikes()
+    {
+        return $this->hasMany(VideoLike::class, ['video_id' => 'video_id'])
+            ->liked();
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getDislikes()
+    {
+        return $this->hasMany(VideoLike::class, ['video_id' => 'video_id'])
+            ->disliked();
     }
 
     /**
@@ -132,7 +153,6 @@ class Video extends \yii\db\ActiveRecord
 
     public function save($runValidation = true, $attributeNames = null)
     {
-        echo 'here';
         $isInsert = $this->isNewRecord;
         if ($isInsert) {
             $this->video_id = Yii::$app->security->generateRandomString(8);
@@ -192,5 +212,21 @@ class Video extends \yii\db\ActiveRecord
         $thumbnailPath = Yii::getAlias('@frontend/web/storage/thumbs/' . $this->video_id . '.jpg');
         if (file_exists($thumbnailPath))
             unlink($thumbnailPath);
+    }
+
+    public function isLikedBy($user_id)
+    {
+        return VideoLike::find()
+            ->userIdVideoId($user_id, $this->video_id)
+            ->liked()
+            ->one();
+    }
+
+    public function isDislikedBy($user_id)
+    {
+        return VideoLike::find()
+            ->userIdVideoId($user_id, $this->video_id)
+            ->disliked()
+            ->one();
     }
 }
