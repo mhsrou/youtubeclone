@@ -11,7 +11,7 @@ use yii\helpers\Url;
 
 ?>
 <a class="btn <?= $channel->isSubscribed(Yii::$app->user->id)
-    ? 'btn-danger' : 'btn-secondary' ?>"
+    ? 'btn-secondary' : 'btn-danger' ?>"
    href="<?= Url::to(['channel/subscribe', 'username' => $channel->username]) ?>"
    data-method="post" data-pjax="1">subscribe
     <i class="fa-regular fa-bell"></i>

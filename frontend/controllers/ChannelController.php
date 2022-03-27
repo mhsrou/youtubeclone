@@ -7,12 +7,16 @@
 
 namespace frontend\controllers;
 
+use common\models\Profile;
 use common\models\Subscriber;
 use common\models\User;
+use common\models\Video;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\UploadedFile;
 
 class ChannelController extends Controller
 {
@@ -36,8 +40,20 @@ class ChannelController extends Controller
     public function actionView($username)
     {
         $channel = $this->findChannel($username);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => Video::find()->creator($channel->id)->published(),
+        ]);
+
+        $profile = new Profile();
+        $profile->avatarPic = UploadedFile::getInstanceByName('avatar');
+        if (Yii::$app->request->isPost && $profile->avatarPic)
+            $profile->save();
+
         return $this->render('view', [
             'channel' => $channel,
+            'profile' => $profile,
+            'dataProvider' => $dataProvider
         ]);
     }
 
