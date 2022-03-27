@@ -7,12 +7,14 @@
 
 namespace common\helpers;
 
+use yii\helpers\Url;
+
 class Html
 {
-    public static function channelLink($user)
+    public static function channelLink($user, $schema = false)
     {
-        return \yii\helpers\Html::a($user->username, [
-            '/channel/view', 'username' => $user->username],
+        return \yii\helpers\Html::a($user->username,
+            Url::to(['/channel/view', 'username' => $user->username], $schema),
             ['class' => 'text-black-50']);
     }
 }
