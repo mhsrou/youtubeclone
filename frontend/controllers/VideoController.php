@@ -60,7 +60,17 @@ class VideoController extends Controller
         $videoView->created_at = time();
         $videoView->save();
 
-        return $this->render('view', ['model' => $video]);
+        $similarVideos = Video::find()
+            ->published()
+            ->byKeyword($video->title)
+            ->andWhere(['NOT', ['video_id' => $video_id]])
+            ->limit(10)
+            ->all();
+
+        return $this->render('view', [
+            'model' => $video,
+            'similarVideos' => $similarVideos,
+        ]);
     }
 
     public function actionLike($video_id)
@@ -68,7 +78,7 @@ class VideoController extends Controller
         $video = $this->findVideo($video_id);
         $user_id = Yii::$app->user->id;
 
-        $videoLikeDislike = VideoLike::find()->userIdVideoId($user_id,$video_id)->one();
+        $videoLikeDislike = VideoLike::find()->userIdVideoId($user_id, $video_id)->one();
 
         if (!$videoLikeDislike)
             $this->saveLikeDislike($video_id, $user_id, VideoLike::TYPE_LIKE);
@@ -87,7 +97,7 @@ class VideoController extends Controller
         $video = $this->findVideo($video_id);
         $user_id = Yii::$app->user->id;
 
-        $videoLikeDislike = VideoLike::find()->userIdVideoId($user_id,$video_id)->one();
+        $videoLikeDislike = VideoLike::find()->userIdVideoId($user_id, $video_id)->one();
 
         if (!$videoLikeDislike)
             $this->saveLikeDislike($video_id, $user_id, VideoLike::TYPE_DISLIKE);
@@ -99,6 +109,45 @@ class VideoController extends Controller
         }
 
         return $this->renderAjax('_buttons', ['model' => $video]);
+    }
+
+    public function actionSearch($keyword)
+    {
+        $this->layout = 'main';
+        $query = Video::find()
+            ->published()
+            ->latest();
+        if ($keyword)
+            $query->byKeyword($keyword);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query
+        ]);
+
+        return $this->render('search', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionHistory()
+    {
+        $this->layout = 'main';
+        $query = Video::find()
+            ->alias('v')
+            ->innerJoin("(SELECT video_id, MAX(created_at) as max_date FROM video_view
+            WHERE user_id = :userId
+            GROUP BY video_id) vv",'vv.video_id = v.video_id',
+                ['userId' => Yii::$app->user->id
+            ])
+            ->OrderBy('vv.max_date DESC');
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query
+        ]);
+
+        return $this->render('history', [
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     protected function findVideo($video_id)

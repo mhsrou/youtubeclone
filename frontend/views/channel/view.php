@@ -19,6 +19,7 @@ use yii\widgets\ListView;
 use yii\widgets\Pjax;
 
 ?>
+
 <div class="d-flex justify-content-between" style="background-image:url(<?= $profile->getAvatarLink($channel->id) ?>) ">
     <div class="jumbotron">
         <h1 class="display-4"><?= $channel->username; ?></h1>

@@ -64,28 +64,30 @@ class ChannelController extends Controller
         $userId = Yii::$app->user->id;
         $subscriber = $channel->isSubscribed($userId);
 
-        if (!$subscriber) {
-            $subscriber = new Subscriber();
-            $subscriber->channel_id = $channel->id;
-            $subscriber->user_id = $userId;
-            $subscriber->created_at = time();
-            $subscriber->save();
-            Yii::$app->mailer->compose([
-                'html' => 'subscriber-html', 'text' => 'subscriber-text'
-            ], [
-                'channel' => $channel,
-                'user' => Yii::$app->user->identity
-            ])->setFrom(Yii::$app->params['senderEmail'])
-                ->setTo($channel->email)
-                ->setSubject('You have a new subscriber')
-                ->send();
-        } else {
-            $subscriber->delete();
+        if ($channel->id != $userId) {
+            if (!$subscriber) {
+                $subscriber = new Subscriber();
+                $subscriber->channel_id = $channel->id;
+                $subscriber->user_id = $userId;
+                $subscriber->created_at = time();
+                $subscriber->save();
+                Yii::$app->mailer->compose([
+                    'html' => 'subscriber-html', 'text' => 'subscriber-text'
+                ], [
+                    'channel' => $channel,
+                    'user' => Yii::$app->user->identity
+                ])->setFrom(Yii::$app->params['senderEmail'])
+                    ->setTo($channel->email)
+                    ->setSubject('You have a new subscriber')
+                    ->send();
+            } else {
+                $subscriber->delete();
+            }
         }
-
         return $this->renderAjax('_subscribe', [
             'channel' => $channel
         ]);
+
     }
 
     /**

@@ -48,4 +48,10 @@ class VideoQuery extends \yii\db\ActiveQuery
     public function published(){
         return $this->andWhere(['status'=>Video::STATUS_PUBLISHED]);
     }
+
+    public function byKeyword($keyword)
+    {
+        return $this->andWhere("MATCH(title,description,tags,video_name)
+        AGAINST (:keyword)",['keyword' => $keyword]);
+    }
 }
