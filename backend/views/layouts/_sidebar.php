@@ -4,17 +4,18 @@
         'options' => [
             'class' => 'd-flex flex-column nav-pills'
         ],
+        'encodeLabels' => false,
         'items' => [
             [
-                'label' => 'Dashboard',
+                'label' => '<i class="fa-solid fa-gauge-high"></i> Dashboard',
                 'url' => ['/site/index']
             ],
             [
-                'label' => 'Videos',
+                'label' => '<i class="fas fa-video"></i> Videos',
                 'url' => ['/video/index']
             ],
             [
-                'label' => 'Comments',
+                'label' => '<i class="fa-solid fa-comment"></i> Comments',
                 'url' => ['/comment/index']
             ]
         ]
