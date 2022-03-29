@@ -41,7 +41,10 @@ class VideoController extends Controller
     {
         $this->layout = 'main';
         $dataProvider = new ActiveDataProvider([
-            'query' => Video::find()->published()->latest(),
+            'query' => Video::find()->with('createdBy')->published()->latest(),
+            'pagination' => [
+                'pageSize' => 5,
+            ]
         ]);
 
         return $this->render('index', [
@@ -136,9 +139,9 @@ class VideoController extends Controller
             ->alias('v')
             ->innerJoin("(SELECT video_id, MAX(created_at) as max_date FROM video_view
             WHERE user_id = :userId
-            GROUP BY video_id) vv",'vv.video_id = v.video_id',
+            GROUP BY video_id) vv", 'vv.video_id = v.video_id',
                 ['userId' => Yii::$app->user->id
-            ])
+                ])
             ->OrderBy('vv.max_date DESC');
 
         $dataProvider = new ActiveDataProvider([
